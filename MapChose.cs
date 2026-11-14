@@ -13,7 +13,7 @@ namespace MapChose;
 public sealed class MapChosePlugin : BasePlugin
 {
     public override string ModuleName => "MapChose";
-    public override string ModuleVersion => "1.1.0";
+    public override string ModuleVersion => "1.2.0";
     public override string ModuleAuthor => "JekProGamer";
     public override string ModuleDescription => "Alternates between two configured CS2 Workshop maps using a map time limit.";
 
@@ -22,6 +22,7 @@ public sealed class MapChosePlugin : BasePlugin
     private bool _switching;
     private int _mapTimeLimitMinutes = 20;
     private Timer? _mapTimer;
+    private Timer? _notificationTimer;
 
     public override void Load(bool hotReload)
     {
@@ -35,9 +36,11 @@ public sealed class MapChosePlugin : BasePlugin
 
     private void OnMapStart(string mapName)
     {
-        // Stop any previous timer before starting the timer for this map.
+        // Stop any previous timers before starting timers for this map.
         _mapTimer?.Kill();
         _mapTimer = null;
+        _notificationTimer?.Kill();
+        _notificationTimer = null;
 
         _currentMap = mapName;
         _switching = false;
@@ -50,6 +53,18 @@ public sealed class MapChosePlugin : BasePlugin
             Logger.LogError("MapChose: maplist.txt must contain exactly 2 valid map names. Map timer was not started.");
             return;
         }
+
+        // Announce five minutes before the change. If the configured map time is
+        // shorter than five minutes, announce at map start with the actual time.
+        var noticeMinutes = Math.Min(5, _mapTimeLimitMinutes);
+        var noticeDelaySeconds = (_mapTimeLimitMinutes - noticeMinutes) * 60.0f;
+
+        _notificationTimer = AddTimer(noticeDelaySeconds, () =>
+        {
+            Server.PrintToChatAll(
+                $"{{WHITE}} [{{ORANGE}} Rez{{RED}} Top{{WHITE}}.cc] До смены карты осталось {{GREEN}} {noticeMinutes} {{WHITE}}Минут.");
+            _notificationTimer = null;
+        }, TimerFlags.STOP_ON_MAPCHANGE);
 
         _mapTimer = AddTimer(_mapTimeLimitMinutes * 60.0f, ChangeToNextMap, TimerFlags.STOP_ON_MAPCHANGE);
     }
