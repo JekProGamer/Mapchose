@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="maplist.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="mapchose.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
