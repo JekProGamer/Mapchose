@@ -7,16 +7,16 @@ using System.Text.RegularExpressions;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Timers;
-using CounterStrikeSharp.API.Modules.Utils;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 using Microsoft.Extensions.Logging;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MapChose;
 
 public sealed class MapChosePlugin : BasePlugin
 {
     public override string ModuleName => "MapChose";
-    public override string ModuleVersion => "1.2.1";
+    public override string ModuleVersion => "1.2.0";
     public override string ModuleAuthor => "JekProGamer";
     public override string ModuleDescription => "Alternates between two configured CS2 Workshop maps using a map time limit.";
 
@@ -65,7 +65,9 @@ public sealed class MapChosePlugin : BasePlugin
         _notificationTimer = AddTimer(noticeDelaySeconds, () =>
         {
             Server.PrintToChatAll(
-                $"{ChatColors.White} [{ChatColors.Gold} Rez{ChatColors.Red} Top{ChatColors.White}.cc] До смены карты осталось {ChatColors.Green} {noticeMinutes} {ChatColors.White}Минут.");
+                $"{{WHITE}} [{{ORANGE}} Rez{{RED}} Top{{WHITE}}.cc] До смены карты осталось {{GREEN}} {noticeMinutes} {{WHITE}}Минут.");
+            Server.PrintToChatAll(
+			    $"{ChatColors.White} [{ChatColors.Orange} Rez{ChatColors.Red} Top{ChatColors.White}.cc] До смены карты осталось {ChatColors.Green} {noticeMinutes} {ChatColors.White}Минут.");
             _notificationTimer = null;
         }, TimerFlags.STOP_ON_MAPCHANGE);
 
